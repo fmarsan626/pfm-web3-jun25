@@ -4,7 +4,11 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && npx fabric-chaincode-node server --chaincode-address=$CHAINCODE_SERVER_ADDRESS --chaincode-id=$CHAINCODE_ID"
+    "dev": "ts-node src/index.ts",
+    "watch": "tsc -w",
+    "lint": "eslint . --ext .ts",
+    "test": "jest",
+    "start": "tsc && set -x && fabric-chaincode-node server --chaincode-address=$CHAINCODE_SERVER_ADDRESS --chaincode-id=$CHAINCODE_ID"
   },
   "keywords": [],
   "author": "",

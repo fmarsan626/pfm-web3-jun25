@@ -1,2 +1,4 @@
 flujo.me
 fabric-samples
+chaincode/node_modules
+chaincode/dist
