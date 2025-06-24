@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",                      // Necesario para decoradores y modern JS
+    "module": "CommonJS",                    // Requerido por Fabric
+    "lib": ["ES2022"],                       // Usa características modernas
+    "experimentalDecorators": true,          // Habilita decoradores
+    "emitDecoratorMetadata": true,           // Requerido por inversify/fabric-contract-api
+    "moduleResolution": "node",              // Busca módulos como Node.js
+    "strict": true,                          // Mejores prácticas de tipado
+    "esModuleInterop": true,                 // Para importar módulos CommonJS
+    "skipLibCheck": true,                    // Evita errores por dependencias
+    "outDir": "./dist",                      // Salida de los archivos compilados
+    "rootDir": "./src"                       // Tu código fuente está en src/
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
