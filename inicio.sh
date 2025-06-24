@@ -62,3 +62,38 @@ EOF
 else
   echo "❌ No se pudo extraer CHAINCODE_ID o CHAINCODE_SERVER_ADDRESS desde logs"
 fi
+
+popd > /dev/null
+
+echo "==============================="
+echo "🧩 Iniciando chaincode con nodemon..."
+echo "==============================="
+
+CHAINCODE_DIR="chaincode"
+
+if [ -d "$CHAINCODE_DIR" ]; then
+  pushd "$CHAINCODE_DIR" > /dev/null
+
+  echo "📦 Instalando dependencias..."
+  npm install
+
+  echo "⚙️ Instalando nodemon localmente..."
+  npm install --save-dev nodemon
+ 
+
+  echo "🌍 Cargando variables del entorno..."
+  if [ -f "../fabric-samples/test-network/.env.ccaas" ]; then
+    source ../fabric-samples/test-network/.env.ccaas
+  else
+    echo "❌ Archivo .env.ccaas no encontrado"
+    exit 1
+  fi
+
+  echo "🚀 Lanzando chaincode con nodemon..."
+  npm start
+
+  popd > /dev/null
+else
+  echo "❌ No se encontró el directorio '$CHAINCODE_DIR'"
+  exit 1
+fi
