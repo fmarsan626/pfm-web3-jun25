@@ -7,6 +7,7 @@ const router = express.Router();
 let contract;
 const initContract = async () => {
   if (!contract) contract = await connectFabric("DonorContract");
+  console.log(contract);
 };
 
 router.post('/donations', async (req, res) => {

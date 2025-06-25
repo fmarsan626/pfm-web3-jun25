@@ -77,8 +77,6 @@ if [ -d "$CHAINCODE_DIR" ]; then
   echo "📦 Instalando dependencias..."
   npm install
 
-  echo "⚙️ Instalando nodemon localmente..."
-  npm install --save-dev nodemon
  
 
   echo "🌍 Cargando variables del entorno..."
@@ -90,7 +88,7 @@ if [ -d "$CHAINCODE_DIR" ]; then
   fi
 
   echo "🚀 Lanzando chaincode con nodemon..."
-  npm start
+  npm run start
 
   popd > /dev/null
 else
