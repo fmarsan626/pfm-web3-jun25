@@ -12,9 +12,9 @@ const initContract = async () => {
 
 router.post('/donations', async (req, res) => {
   await initContract();
-  const { donationId, metadata } = req.body;
+  const { donationId, metadata, ongId } = req.body;
   try {
-    const result = await contract.submitTransaction("registerDonation", donationId, metadata);
+    const result = await contract.submitTransaction("registerDonation", donationId, metadata, ongId);
     res.json({ success: true, result: result.toString() });
   } catch (err) {
     res.status(500).json({ error: err.message });

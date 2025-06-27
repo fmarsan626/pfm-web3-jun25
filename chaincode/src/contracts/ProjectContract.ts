@@ -1,77 +1,85 @@
 import { Context, Contract, Info, Returns, Transaction } from 'fabric-contract-api';
-import { DonationStatus } from './constants';
+import { DONATION_STATUS } from './constants';
 import { Donation } from './models/Donation';
 
-@Info({ title: 'ProjectContract', description: 'Contrato para la gestión de proyectos que reciben donaciones' })
+@Info({ title: 'ProjectContract', description: 'Contrato para proyectos que reciben y reportan donaciones' })
 export class ProjectContract extends Contract {
+
   @Transaction()
   public async confirmReceipt(ctx: Context, donationId: string): Promise<void> {
-    const msp = ctx.clientIdentity.getMSPID();
-    if (msp !== 'Org2MSP') {
-      throw new Error('Solo proyectos bajo Org2 pueden confirmar recepción de donaciones');
+    this._checkMSP(ctx, 'Org1MSP');
+
+    const donation = await this._getDonation(ctx, donationId);
+
+    if (donation.status !== DONATION_STATUS.ASIGNADA_A_PROYECTO) {
+      throw new Error(`La donación ${donationId} debe estar en estado ASIGNADA.`);
     }
 
-    const donationBytes = await ctx.stub.getState(donationId);
-    if (!donationBytes || donationBytes.length === 0) {
-      throw new Error(`La donación ${donationId} no existe`);
-    }
-
-    const donation = JSON.parse(donationBytes.toString()) as Donation;
-    if (donation.status !== DonationStatus.ASIGNADA_A_PROYECTO) {
-      throw new Error(`La donación ${donationId} no está en estado asignado a proyecto`);
-    }
-
-    donation.status = DonationStatus.RECIBIDA_POR_PROYECTO;
-    donation.timestamp = new Date().toISOString();
+    donation.status = DONATION_STATUS.EJECUTADA_EN_PROYECTO;
 
     await ctx.stub.putState(donationId, Buffer.from(JSON.stringify(donation)));
   }
 
   @Transaction()
   public async reportExecution(ctx: Context, donationId: string, executionReport: string): Promise<void> {
-    const msp = ctx.clientIdentity.getMSPID();
-    if (msp !== 'Org2MSP') {
-      throw new Error('Solo proyectos bajo Org2 pueden registrar la ejecución');
+    this._checkMSP(ctx, 'Org1MSP');
+
+    const donation = await this._getDonation(ctx, donationId);
+
+    if (donation.status !== DONATION_STATUS.EJECUTADA_EN_PROYECTO) {
+      throw new Error(`La donación ${donationId} debe estar en estado ENTREGADA.`);
     }
 
-    const donationBytes = await ctx.stub.getState(donationId);
-    if (!donationBytes || donationBytes.length === 0) {
-      throw new Error(`La donación ${donationId} no existe`);
-    }
-
-    const donation = JSON.parse(donationBytes.toString()) as Donation;
-    if (donation.status !== DonationStatus.RECIBIDA_POR_PROYECTO) {
-      throw new Error(`La donación ${donationId} no ha sido confirmada como recibida aún`);
-    }
-
-    donation.status = DonationStatus.EJECUTADA_EN_PROYECTO;
     donation.executionReport = executionReport;
-    donation.timestamp = new Date().toISOString();
+
+    await ctx.stub.putState(donationId, Buffer.from(JSON.stringify(donation)));
+  }
+
+  @Transaction()
+  public async assignDonationToBeneficiary(ctx: Context, donationId: string, beneficiaryId: string): Promise<void> {
+    this._checkMSP(ctx, 'Org1MSP');
+
+    const donation = await this._getDonation(ctx, donationId);
+
+    if (donation.status !== DONATION_STATUS.ASIGNADA_A_PROYECTO) {
+      throw new Error(`La donación ${donationId} debe estar en estado ASIGNADA para ser entregada a un beneficiario.`);
+    }
+
+    donation.beneficiaryId = beneficiaryId;
+    // No cambiamos status aquí: confirmación ocurre en BeneficiaryContract
 
     await ctx.stub.putState(donationId, Buffer.from(JSON.stringify(donation)));
   }
 
   @Transaction(false)
   @Returns('string')
-  public async listProjectDonations(ctx: Context, projectId: string): Promise<string> {
+  public async listProjectDonations(ctx: Context): Promise<string> {
+    const iterator: any = await ctx.stub.getStateByRange('', '');
     const results: Donation[] = [];
-    const iterator = await ctx.stub.getStateByRange('', '');
 
-    while (true) {
-      const res = await iterator.next();
-      if (res.value && res.value.value.toString()) {
-        const donation = JSON.parse(res.value.value.toString()) as Donation;
-        if (donation.assignedProjectId === projectId) {
-          results.push(donation);
-        }
+    for await (const res of iterator) {
+      const donation: Donation = JSON.parse(res.value.toString());
+      if (donation.assignedProjectId) {
+        results.push(donation);
       }
-      if (res.done) {
-        await iterator.close();
-        break;
-      }
-      
     }
-
     return JSON.stringify(results);
   }
+
+  private async _getDonation(ctx: Context, donationId: string): Promise<Donation> {
+    const data = await ctx.stub.getState(donationId);
+    if (!data || data.length === 0) {
+      throw new Error(`La donación ${donationId} no existe.`);
+    }
+    return JSON.parse(data.toString());
+  }
+
+  private _checkMSP(ctx: Context, expectedMSP: string) {
+    const mspId = ctx.clientIdentity.getMSPID();
+    if (mspId !== expectedMSP) {
+      throw new Error(`Acceso denegado para MSP: ${mspId}`);
+    }
+  }
 }
+
+export default ProjectContract;

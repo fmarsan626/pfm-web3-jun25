@@ -1,5 +1,6 @@
 export interface Donation {
   donationId: string;
+  ongId: string;
   metadata: string;
   createdBy: string;
   status: string;
@@ -7,6 +8,6 @@ export interface Donation {
   assignedProjectId?: string;
   handledBy?: string;
   executionReport?: string;
-  deliveredToBeneficiaryId?: string;
+  beneficiaryId?: string;
   deliveryReport?: string;
 }

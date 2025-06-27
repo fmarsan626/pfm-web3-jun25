@@ -1,11 +1,12 @@
 import { Context, Contract, Info, Returns, Transaction } from 'fabric-contract-api';
-import { DonationStatus } from './constants';
+import { DONATION_STATUS } from './constants';
 import { Donation } from './models/Donation';
 
 @Info({ title: 'DonorContract', description: 'Contrato de donaciones de donantes' })
 export class DonorContract extends Contract {
   @Transaction()
-  public async registerDonation(ctx: Context, donationId: string, metadata: string): Promise<void> {
+  @Returns('string')
+  public async registerDonation(ctx: Context, donationId: string, metadata: string, ongId: string): Promise<string> {
     const msp = ctx.clientIdentity.getMSPID();
     if (msp !== 'Org1MSP') {
       throw new Error('Solo los donantes (Org1) pueden registrar donaciones');
@@ -19,12 +20,14 @@ export class DonorContract extends Contract {
     const donation: Donation = {
       donationId,
       metadata,
+      ongId,
       createdBy: ctx.clientIdentity.getID(),
-      status: DonationStatus.ENVIADA_A_ONG,
+      status: DONATION_STATUS.ENVIADA_A_ONG,
       timestamp: new Date().toISOString()
     };
 
     await ctx.stub.putState(donationId, Buffer.from(JSON.stringify(donation)));
+    return JSON.stringify(donation);
   }
 
   @Transaction(false)

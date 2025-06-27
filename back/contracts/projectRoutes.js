@@ -29,6 +29,17 @@ router.post('/:id/report', async (req, res) => {
   }
 });
 
+router.post('/:id/assign', async (req, res) => {
+  await initContract();
+  const { beneficiaryId } = req.body;
+  try {
+    await contract.submitTransaction("assignDonationToBeneficiary", req.params.id, beneficiaryId);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get('/donations', async (req, res) => {
   await initContract();
   try {
@@ -38,5 +49,6 @@ router.get('/donations', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 export default router;

@@ -5,6 +5,8 @@ import donorRoutes from './contracts/donorRoutes.js';
 import ongRoutes from './contracts/ongRoutes.js';
 import projectRoutes from './contracts/projectRoutes.js';
 import beneficiaryRoutes from './contracts/beneficiaryRoutes.js';
+import adminRoutes from './contracts/adminRoutes.js';
+
 
 
 const app = express();
@@ -17,6 +19,7 @@ app.use('/donor', donorRoutes);
 app.use('/ong', ongRoutes);
 app.use('/project', projectRoutes);
 app.use('/beneficiary', beneficiaryRoutes);
+app.use('/admin', adminRoutes);
 app.get('/', (req, res) => {
   res.json({
     message: "🎉 Bienvenido a la API de Donaciones en Hyperledger Fabric",
