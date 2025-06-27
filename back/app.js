@@ -17,7 +17,21 @@ app.use('/donor', donorRoutes);
 app.use('/ong', ongRoutes);
 app.use('/project', projectRoutes);
 app.use('/beneficiary', beneficiaryRoutes);
+app.get('/', (req, res) => {
+  res.json({
+    message: "🎉 Bienvenido a la API de Donaciones en Hyperledger Fabric",
+    rutasDisponibles: [
+      "/donor",
+      "/ong",
+      "/project",
+      "/beneficiary"
+    ]
+  });
+});
 
+app.use((req, res) => {
+  res.status(404).json({ error: "Ruta no encontrada" });
+});
 app.listen(port, () => {
   console.log(`API server running on http://localhost:${port}`);
 });

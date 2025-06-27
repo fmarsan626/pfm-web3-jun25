@@ -7,7 +7,7 @@ const router = express.Router();
 let contract;
 const initContract = async () => {
   if (!contract) contract = await connectFabric("DonorContract");
-  console.log(contract);
+  
 };
 
 router.post('/donations', async (req, res) => {
@@ -31,14 +31,3 @@ router.get('/donations/:donationId', async (req, res) => {
   }
 });
 
-router.get('/donations', async (req, res) => {
-  await initContract();
-  try {
-    const result = await contract.evaluateTransaction("listMyDonations");
-    res.json(JSON.parse(result.toString()));
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-export default router;

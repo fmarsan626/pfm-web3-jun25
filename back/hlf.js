@@ -8,10 +8,8 @@ import { dirname } from 'node:path';
 const __dirname = dirname(".");
 
 const ROOT = path.resolve(__dirname, "../fabric-samples/test-network")
-// const ROOT = "/Users/joseviejo/go/src/github.com/Jviejo/fabric-samples/test-network"
 const BASE = `${ROOT}/organizations/peerOrganizations/org1.example.com`
 
-// const BASE = "/Users/joseviejo/go/src/github.com/Jviejo/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com"
 const CERT_USER = fs.readFileSync(`${BASE}/users/User1@org1.example.com/msp/signcerts/User1@org1.example.com-cert.pem`).toString()
 const KEY_USER = fs.readFileSync(`${BASE}/users/User1@org1.example.com/msp/keystore/priv_sk`).toString()
 const CHANNEL = "mychannel"
@@ -65,6 +63,3 @@ export async function connectFabric(contractName) {
 
    
 }
-
-
-

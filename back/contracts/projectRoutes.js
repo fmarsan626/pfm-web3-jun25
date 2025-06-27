@@ -8,7 +8,7 @@ const initContract = async () => {
   if (!contract) contract = await connectFabric("ProjectContract");
 };
 
-router.post('/donations/:id/confirm', async (req, res) => {
+router.post('/:id/confirm', async (req, res) => {
   await initContract();
   try {
     await contract.submitTransaction("confirmReceipt", req.params.id);
@@ -18,7 +18,7 @@ router.post('/donations/:id/confirm', async (req, res) => {
   }
 });
 
-router.post('/donations/:id/report', async (req, res) => {
+router.post('/:id/report', async (req, res) => {
   await initContract();
   const { executionReport } = req.body;
   try {

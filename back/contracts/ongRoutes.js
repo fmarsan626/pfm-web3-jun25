@@ -8,7 +8,7 @@ const initContract = async () => {
   if (!contract) contract = await connectFabric("ONGContract");
 };
 
-router.post('/donations/:id/accept', async (req, res) => {
+router.post('/:id/accept', async (req, res) => {
   await initContract();
   try {
     await contract.submitTransaction("acceptDonation", req.params.id);
@@ -18,7 +18,7 @@ router.post('/donations/:id/accept', async (req, res) => {
   }
 });
 
-router.post('/donations/:id/reject', async (req, res) => {
+router.post('/:id/reject', async (req, res) => {
   await initContract();
   try {
     await contract.submitTransaction("rejectDonation", req.params.id);
@@ -27,7 +27,7 @@ router.post('/donations/:id/reject', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-router.post('/donations/:id/assign', async (req, res) => {
+router.post('/:id/assign', async (req, res) => {
   await initContract();
   const { projectId } = req.body;
   try {
@@ -38,7 +38,7 @@ router.post('/donations/:id/assign', async (req, res) => {
   }
 });
 
-router.get('/donations/pending', async (req, res) => {
+router.get('/pending', async (req, res) => {
   await initContract();
   try {
     const result = await contract.evaluateTransaction("listPendingDonations");
