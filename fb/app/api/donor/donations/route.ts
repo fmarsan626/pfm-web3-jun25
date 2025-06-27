@@ -8,9 +8,16 @@ export async function POST(req: NextRequest) {
     const contract = await connectFabric('DonorContract');
     const result = await contract.submitTransaction('registerDonation', donationId, metadata, ongId);
 
-    return NextResponse.json({ success: true, result: result.toString() });
+    const decoded = decodeByteString(result.toString());
+    const parsed = JSON.parse(decoded);
+    return NextResponse.json({ success: true, result: parsed }, { status: 200 });
   } catch (error: any) {
     console.error('Error creando donación:', error.message);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
+}
+
+function decodeByteString(byteString: string): string {
+  const bytes = byteString.split(',').map(b => parseInt(b.trim()));
+  return Buffer.from(bytes).toString('utf-8');
 }

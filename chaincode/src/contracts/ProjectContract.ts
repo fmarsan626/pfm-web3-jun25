@@ -15,7 +15,7 @@ export class ProjectContract extends Contract {
       throw new Error(`La donación ${donationId} debe estar en estado ASIGNADA.`);
     }
 
-    donation.status = DONATION_STATUS.EJECUTADA_EN_PROYECTO;
+    donation.status = DONATION_STATUS.RECIBIDA_POR_PROYECTO;
 
     await ctx.stub.putState(donationId, Buffer.from(JSON.stringify(donation)));
   }
@@ -26,10 +26,10 @@ export class ProjectContract extends Contract {
 
     const donation = await this._getDonation(ctx, donationId);
 
-    if (donation.status !== DONATION_STATUS.EJECUTADA_EN_PROYECTO) {
+    if (donation.status !== DONATION_STATUS.ENTREGADA_A_BENEFICIARIO) {
       throw new Error(`La donación ${donationId} debe estar en estado ENTREGADA.`);
     }
-
+    donation.status = DONATION_STATUS.EJECUTADA_EN_PROYECTO;
     donation.executionReport = executionReport;
 
     await ctx.stub.putState(donationId, Buffer.from(JSON.stringify(donation)));
@@ -57,10 +57,20 @@ export class ProjectContract extends Contract {
     const iterator: any = await ctx.stub.getStateByRange('', '');
     const results: Donation[] = [];
 
-    for await (const res of iterator) {
-      const donation: Donation = JSON.parse(res.value.toString());
-      if (donation.assignedProjectId) {
-        results.push(donation);
+
+    while (true) {
+      const res = await iterator.next();
+
+      if (res.value && res.value.value.toString()) {
+        const donation: Donation = JSON.parse(res.value.value.toString());
+        if (donation.assignedProjectId) {
+          results.push(donation);
+        }
+      }
+
+      if (res.done) {
+        await iterator.close();
+        break;
       }
     }
     return JSON.stringify(results);
