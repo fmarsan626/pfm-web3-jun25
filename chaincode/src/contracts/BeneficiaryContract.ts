@@ -11,14 +11,14 @@ export class BeneficiaryContract extends Contract {
 
     const donation = await this._getDonation(ctx, donationId);
 
-    if (donation.status !== DONATION_STATUS.EJECUTADA_EN_PROYECTO) {
+    if (donation.status !== DONATION_STATUS.ASIGNADA_A_BENEFICIARIO) {
       throw new Error(`La donación ${donationId} no ha sido marcada como ENTREGADA.`);
     }
 
     if (donation.beneficiaryId !== beneficiaryId) {
       throw new Error(`La donación ${donationId} no está asignada al beneficiario ${beneficiaryId}.`);
     }
-
+    donation.status = DONATION_STATUS.ENTREGADA_A_BENEFICIARIO;
     donation.deliveryReport = deliveryReport;
 
     await ctx.stub.putState(donationId, Buffer.from(JSON.stringify(donation)));
@@ -26,7 +26,7 @@ export class BeneficiaryContract extends Contract {
 
   @Transaction(false)
   @Returns('string')
-  public async listReceivedDonations(ctx: Context): Promise<string> {
+  public async listReceivedDonations(ctx: Context, beneficiaryId: string): Promise<string> {
     const iterator = await ctx.stub.getStateByRange('', '');
     const results: Donation[] = [];
 
@@ -35,7 +35,7 @@ export class BeneficiaryContract extends Contract {
       if (res.value && res.value.value.toString()) {
         try {
           const donation: Donation = JSON.parse(res.value.value.toString());
-          if (donation.beneficiaryId) {
+          if (donation.beneficiaryId === beneficiaryId) {
             results.push(donation);
           }
         } catch (e) {
@@ -48,6 +48,7 @@ export class BeneficiaryContract extends Contract {
 
     return JSON.stringify(results);
   }
+
 
   private async _getDonation(ctx: Context, donationId: string): Promise<Donation> {
     const data = await ctx.stub.getState(donationId);

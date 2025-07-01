@@ -41,10 +41,10 @@ export class ProjectContract extends Contract {
 
     const donation = await this._getDonation(ctx, donationId);
 
-    if (donation.status !== DONATION_STATUS.ASIGNADA_A_PROYECTO) {
-      throw new Error(`La donación ${donationId} debe estar en estado ASIGNADA para ser entregada a un beneficiario.`);
+    if (donation.status !== DONATION_STATUS.RECIBIDA_POR_PROYECTO) {
+      throw new Error(`La donación ${donationId} debe estar en estado RECIBIDA para ser entregada a un beneficiario.`);
     }
-
+    donation.status = DONATION_STATUS.ASIGNADA_A_BENEFICIARIO;
     donation.beneficiaryId = beneficiaryId;
     // No cambiamos status aquí: confirmación ocurre en BeneficiaryContract
 
