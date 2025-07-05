@@ -13,8 +13,11 @@ export default function ReceivedDonationsPage() {
 
     const fetchDonations = async () => {
       try {
-        const res = await fetch(`/api/beneficiary/${account}/donations`);
-        const data = await res.json();
+        const res = await fetch(`/api/beneficiary/${account}/donations`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address: account }),
+        }); const data = await res.json();
 
         if (data.success) {
           setDonations(data.result || []);
@@ -40,8 +43,8 @@ export default function ReceivedDonationsPage() {
       ) : (
         <ul className="space-y-4">
           {donations.map((donation) => (
-            <li key={donation.id} className="bg-gray-100 p-4 rounded shadow-sm">
-              <p><strong>ID:</strong> {donation.id}</p>
+            <li key={donation.donationId} className="bg-gray-100 p-4 rounded shadow-sm">
+              <p><strong>ID:</strong> {donation.donationId}</p>
               <p><strong>Cantidad:</strong> {donation.amount}</p>
               <p><strong>Estado:</strong> {donation.status}</p>
               {donation.metadata && (

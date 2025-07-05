@@ -3,15 +3,15 @@ import { connectFabric } from '../../../../../src/lib/hlf';
 import { validateRole } from '../../../../../src/lib/auth/validationRole';
 
 export async function POST(req: NextRequest, context: { params: { id: string } }) {
-  const { id } = context.params;
-  const { address } = await req.json();
-  const { valid } = await validateRole(address, 'project');
-  if (!valid) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 403 });
-
+  
 
   try {
-    const { beneficiaryId } = await req.json();
+    const { beneficiaryId, address } = await req.json();
     const contract = await connectFabric('ProjectContract');
+    const { id } = context.params;
+    const { valid } = await validateRole(address, 'project');
+    if (!valid) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 403 });
+
     await contract.submitTransaction('assignDonationToBeneficiary', id, beneficiaryId);
 
     return NextResponse.json({ success: true });

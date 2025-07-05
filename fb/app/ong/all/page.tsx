@@ -8,26 +8,26 @@ export default function AllDonationsPage() {
   const [donations, setDonations] = useState<any[]>([]);
   const [message, setMessage] = useState('');
 
-useEffect(() => {
-  const fetchDonations = async () => {
-    if (!account) return;
+  useEffect(() => {
+    const fetchDonations = async () => {
+      if (!account) return;
 
-    try {
-      const res = await fetch(`/api/ong/${account}/donations`);
-      const data = await res.json();
-      if (data.success) {
-        setDonations(data.result);
-      } else {
-        setMessage(`⚠️ ${data.error}`);
+      try {
+        const res = await fetch(`/api/ong/${account}/donations`);
+        const data = await res.json();
+        if (data.success) {
+          setDonations(data.result);
+        } else {
+          setMessage(`⚠️ ${data.error}`);
+        }
+      } catch (error) {
+        setMessage('❌ Error al cargar donaciones');
+        console.error(error);
       }
-    } catch (error) {
-      setMessage('❌ Error al cargar donaciones');
-      console.error(error);
-    }
-  };
+    };
 
-  fetchDonations();
-}, [account]);
+    fetchDonations();
+  }, [account]);
 
 
   return (
@@ -42,7 +42,13 @@ useEffect(() => {
             <p><strong>Estado:</strong> {donation.status}</p>
             <p><strong>Donante:</strong> {donation.donor}</p>
             <p><strong>Proyecto asignado:</strong> {donation.assignedProjectId || '—'}</p>
+            <p><strong>ONG:</strong> {donation.ongId}</p>
             <p><strong>Cantidad:</strong> {donation.amount}</p>
+            <p><strong>Metadata:</strong> {donation.metadata}</p>
+            <p><strong>Estado:</strong> {donation.status}</p>
+            <p><strong>Beneficiario:</strong> {donation.beneficiaryId || 'No asignado'}</p>
+            <p><strong>Reporte del beneficiario:</strong> {donation.deliveryReport || 'Sin reporte'}</p>
+            <p><strong>Reporte del proyecto:</strong> {donation.executionReport || 'Sin reporte'}</p>
           </li>
         ))}
       </ul>

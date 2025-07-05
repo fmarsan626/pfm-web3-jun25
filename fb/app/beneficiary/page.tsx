@@ -14,14 +14,14 @@ export default function BeneficiaryHomePage() {
           className="w-full bg-blue-600 text-white px-4 py-2 rounded"
           onClick={() => router.push('/beneficiary/donations')}
         >
-          📦 Ver Donaciones Recibidas
+           Ver Donaciones Recibidas
         </button>
 
         <button
           className="w-full bg-green-600 text-white px-4 py-2 rounded"
           onClick={() => router.push('/beneficiary/confirm')}
         >
-          ✅ Confirmar Entrega de Donaciones
+          Confirmar Entrega de Donaciones
         </button>
       </div>
     </main>

@@ -23,7 +23,7 @@ export default function MyDonationsPage() {
         });
 
         const data = await res.json();
-        if (data.success) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+        if (data.success) {
           setDonations(data.result);
         } else {
           setError(data.error || 'Error al obtener donaciones');
@@ -57,7 +57,10 @@ export default function MyDonationsPage() {
             <p><strong>Cantidad:</strong> {donation.amount}</p>
             <p><strong>Estado:</strong> {donation.status}</p>
             <p><strong>Metadata:</strong> {donation.metadata}</p>
-          </li>
+            <p><strong>Beneficiario:</strong> {donation.beneficiaryId || 'No asignado'}</p>
+            <p><strong>Reporte del beneficiario:</strong> {donation.deliveryReport || 'Sin reporte'}</p>         
+            <p><strong>Reporte del proyecto:</strong> {donation.executionReport || 'Sin reporte'}</p>         
+            </li>
         ))}
       </ul>
     </main>

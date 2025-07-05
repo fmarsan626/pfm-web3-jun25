@@ -5,13 +5,16 @@ import { validateRole } from '../../../../../src/lib/auth/validationRole';
 
 export async function POST(req: NextRequest, context: { params: { id: string } }) {
   const { id } = context.params;
-  const { address } = await req.json();
-  const { valid } = await validateRole(address, 'project');
-  if (!valid) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 403 });
-
 
   try {
-    const { executionReport } = await req.json();
+    const body = await req.json();
+    const { executionReport, address } = body;
+
+    const { valid } = await validateRole(address, 'project');
+    if (!valid) {
+      return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 403 });
+    }
+
     const contract = await connectFabric('ProjectContract');
     await contract.submitTransaction('reportExecution', id, executionReport);
 
