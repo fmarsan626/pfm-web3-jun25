@@ -72,7 +72,11 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 export function useWeb3() {
   const context = useContext(Web3Context);
   if (!context) {
-    throw new Error('useWeb3 must be used within a Web3Provider');
+    if (typeof window === 'undefined') {
+      throw new Error('❌ useWeb3() was called on the server. This hook must be used in a client component.');
+    } else {
+      throw new Error('❌ useWeb3() must be used within a Web3Provider.');
+    }
   }
   return context;
-} 
+}

@@ -6,7 +6,7 @@ export default function Header() {
   return (
     <header className="p-4 bg-gray-800 text-white">
       <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-xl font-bold">Trazabilidad de donaciones</h1>
+        <h1 className="text-xl font-bold">MetaMask Demo</h1>
         <div>
           {isConnected ? (
             <div className="flex items-center gap-4">

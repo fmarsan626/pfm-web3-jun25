@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useWeb3 } from '@/context/Web3Context';
 
 export default function CreateProjectPage() {
+  const { account } = useWeb3(); 
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [metadata, setMetadata] = useState('');
@@ -21,7 +23,13 @@ export default function CreateProjectPage() {
       const res = await fetch('/api/admin/project', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, name, metadata, wallet }),
+        body: JSON.stringify({
+          address: account,
+          id,
+          name,
+          metadata,
+          wallet,
+        }),
       });
 
       const data = await res.json();
@@ -58,7 +66,7 @@ export default function CreateProjectPage() {
           <label className="block mb-1">Dirección de Wallet</label>
           <input type="text" value={wallet} onChange={e => setWallet(e.target.value)} required className="w-full border p-2 rounded" />
         </div>
-        <button type="submit" disabled={loading} className="bg-green-600 text-white px-4 py-2 rounded">
+        <button type="submit" disabled={loading || !account} className="bg-green-600 text-white px-4 py-2 rounded">
           {loading ? 'Creando...' : 'Crear Proyecto'}
         </button>
         {message && <p className="mt-4">{message}</p>}

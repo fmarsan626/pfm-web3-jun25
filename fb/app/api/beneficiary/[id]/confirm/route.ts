@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectFabric } from '@/lib/hlf';
+import { connectFabric } from '../../../../../src/lib/hlf';
+import { validateRole } from '../../../../../src/lib/auth/validationRole';
+
 
 interface Params {
   params: {
@@ -9,6 +11,9 @@ interface Params {
 
 export async function POST(req: NextRequest, { params }: Params) {
   const { id: donationId } = params;
+  const { address } = await req.json();
+  const { valid } = await validateRole(address, 'beneficiary');
+  if (!valid) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 403 });
 
   try {
     const { beneficiaryId, deliveryReport } = await req.json();

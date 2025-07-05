@@ -58,20 +58,90 @@ export class ONGContract extends Contract {
 
   @Transaction(false)
   @Returns('string')
-  public async listPendingDonations(ctx: Context): Promise<string> {
-    const results: Donation[] = [];
+  public async listPendingDonations(ctx: Context, ongId: string): Promise<string> {
     const iterator = await ctx.stub.getStateByRange('', '');
+    const results = [];
+
     while (true) {
       const res = await iterator.next();
       if (res.value && res.value.value.toString()) {
-        const donation = JSON.parse(res.value.value.toString()) as Donation;
-        if (donation.status === DONATION_STATUS.ENVIADA_A_ONG) results.push(donation);
+        try {
+          const donation = JSON.parse(res.value.value.toString());
+
+          if (
+            donation.status === DONATION_STATUS.ENVIADA_A_ONG &&
+            donation.ongId?.toLowerCase() === ongId.toLowerCase()
+          ) {
+            results.push(donation);
+          }
+        } catch (e) {
+          console.error(`Error al parsear donación: ${e}`);
+        }
       }
-      if (res.done) {
-        await iterator.close();
-        break;
-      }
+      if (res.done) break;
     }
+
+    await iterator.close();
     return JSON.stringify(results);
   }
+
+  @Transaction(false)
+  @Returns('string')
+  public async listUnassignedDonations(ctx: Context, ongId: string): Promise<string> {
+    const iterator = await ctx.stub.getStateByRange('', '');
+    const results = [];
+
+    while (true) {
+      const res = await iterator.next();
+      if (res.value && res.value.value.toString()) {
+        try {
+          const donation = JSON.parse(res.value.value.toString());
+
+          if (
+            donation.status === DONATION_STATUS.ACEPTADA_POR_ONG &&
+            donation.ongId?.toLowerCase() === ongId.toLowerCase() &&
+            !donation.assignedProjectId
+          ) {
+            results.push(donation);
+          }
+        } catch (e) {
+          console.error(`Error al parsear donación: ${e}`);
+        }
+      }
+      if (res.done) break;
+    }
+
+    await iterator.close();
+    return JSON.stringify(results);
+  }
+
+  @Transaction(false)
+  @Returns('string')
+  public async listAllDonationsByONG(ctx: Context, ongId: string): Promise<string> {
+    const iterator = await ctx.stub.getStateByRange('', '');
+    const results = [];
+
+    while (true) {
+      const res = await iterator.next();
+      if (res.value && res.value.value.toString()) {
+        try {
+          const donation = JSON.parse(res.value.value.toString());
+
+          if (donation.ongId?.toLowerCase() === ongId.toLowerCase()) {
+            results.push(donation);
+          }
+        } catch (e) {
+          console.error(`Error al parsear donación: ${e}`);
+        }
+      }
+      if (res.done) break;
+    }
+
+    await iterator.close();
+    return JSON.stringify(results);
+  }
+
+
 }
+
+

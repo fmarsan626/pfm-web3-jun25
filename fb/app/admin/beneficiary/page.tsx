@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useWeb3 } from '@/context/Web3Context';
 
 export default function CreateBeneficiaryPage() {
+  const { account } = useWeb3();
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [metadata, setMetadata] = useState('');
@@ -21,7 +23,7 @@ export default function CreateBeneficiaryPage() {
       const res = await fetch('/api/admin/beneficiary', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, name, metadata, wallet }),
+        body: JSON.stringify({ address: account, id, name, metadata, wallet }),
       });
 
       const data = await res.json();
@@ -44,21 +46,44 @@ export default function CreateBeneficiaryPage() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block mb-1">ID del Beneficiario</label>
-          <input type="text" value={id} onChange={e => setId(e.target.value)} required className="w-full border p-2 rounded" />
+          <input
+            type="text"
+            value={id}
+            onChange={e => setId(e.target.value)}
+            required
+            className="w-full border p-2 rounded"
+          />
         </div>
         <div>
           <label className="block mb-1">Nombre</label>
-          <input type="text" value={name} onChange={e => setName(e.target.value)} required className="w-full border p-2 rounded" />
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            required
+            className="w-full border p-2 rounded"
+          />
         </div>
         <div>
           <label className="block mb-1">Metadata (JSON)</label>
-          <textarea value={metadata} onChange={e => setMetadata(e.target.value)} required className="w-full border p-2 rounded" />
+          <textarea
+            value={metadata}
+            onChange={e => setMetadata(e.target.value)}
+            required
+            className="w-full border p-2 rounded"
+          />
         </div>
         <div>
           <label className="block mb-1">Dirección de Wallet</label>
-          <input type="text" value={wallet} onChange={e => setWallet(e.target.value)} required className="w-full border p-2 rounded" />
+          <input
+            type="text"
+            value={wallet}
+            onChange={(e) => setWallet(e.target.value)}
+            required
+            className="w-full border p-2 rounded"
+          />
         </div>
-        <button type="submit" disabled={loading} className="bg-purple-600 text-white px-4 py-2 rounded">
+        <button type="submit" disabled={loading || !account} className="bg-purple-600 text-white px-4 py-2 rounded">
           {loading ? 'Creando...' : 'Crear Beneficiario'}
         </button>
         {message && <p className="mt-4">{message}</p>}

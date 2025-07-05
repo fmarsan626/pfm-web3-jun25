@@ -35,7 +35,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       if (normalized === ADMIN_WALLET.toLowerCase()) {
         setRole('admin');
-        setId('admin'); // puedes dejarlo así o sin ID si no lo usas
+        setId('admin'); 
         router.push('/admin');
         return;
       }

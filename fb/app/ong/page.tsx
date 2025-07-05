@@ -24,12 +24,7 @@ export default function OngDashboard() {
           Asignar donación a proyecto
         </button>
 
-        <button
-          onClick={() => router.push('/ong/unassigned')}
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded"
-        >
-          Donaciones sin asignar
-        </button>
+       
 
         <button
           onClick={() => router.push('/ong/all')}

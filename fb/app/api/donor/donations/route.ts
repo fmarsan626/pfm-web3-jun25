@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectFabric } from '@/lib/hlf';
+import { connectFabric } from '../../../../src/lib/hlf';
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,7 +19,9 @@ export async function POST(req: NextRequest) {
       donor
     );
 
-    return NextResponse.json({ success: true, result: JSON.parse(result.toString()) }, { status: 200 });
+    const raw = Buffer.from(result).toString('utf8');
+    console.log('📦 Resultado raw donación:', raw);
+    return NextResponse.json({ success: true, result: JSON.parse(raw) }, { status: 200 });
   } catch (error: any) {
     console.error('Error creando donación:', error.message);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

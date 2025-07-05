@@ -1,10 +1,11 @@
 'use client';
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Web3Provider } from '@/context/Web3Context';
+import { Web3Provider } from '../src/context/Web3Context';
 import Header from '@/components/Header';
-import { UserProvider } from '@/context/UserContext';
+import { UserProvider } from '../src/context/UserContext';
 
 
 const geistSans = Geist({

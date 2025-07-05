@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useWeb3 } from '@/context/Web3Context';
+import { useWeb3 } from '../../../src/context/Web3Context';
 
 export default function MyDonationsPage() {
   const { account, isConnected } = useWeb3();
@@ -16,14 +16,14 @@ export default function MyDonationsPage() {
       setLoading(true);
       setError('');
       try {
-        const res = await fetch('/api/donor/donations', {
+        const res = await fetch('/api/donor/my-donations', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ donor: account }),
         });
 
         const data = await res.json();
-        if (data.success) {
+        if (data.success) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
           setDonations(data.result);
         } else {
           setError(data.error || 'Error al obtener donaciones');

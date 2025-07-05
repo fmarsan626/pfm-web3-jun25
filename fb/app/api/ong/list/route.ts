@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectFabric } from '@/lib/hlf';
+import { connectFabric } from '../../../../src/lib/hlf';
+
 
 export async function GET(_req: NextRequest) {
+
+
   try {
     const contract = await connectFabric('AdminContract');
     const result = await contract.evaluateTransaction('listAllEntities');
-    const entities = JSON.parse(result.toString());
+    const raw = Buffer.from(result).toString('utf8');
+    console.log('📦 ONG JSON Raw:', raw);
 
+    const entities = JSON.parse(raw);
     const ongs = entities
       .filter((e: any) => e.type?.toLowerCase() === 'ong')
       .map((e: any) => ({

@@ -6,7 +6,7 @@ export class AdminContract extends Contract {
 
   @Transaction()
   @Returns('string')
-  public async createONG(ctx: Context, ongId: string, name: string, metadata: string): Promise<string> {
+  public async createONG(ctx: Context, ongId: string, name: string, metadata: string, wallet: string): Promise<string> {
     const exists = await this._exists(ctx, ongId);
     if (exists) throw new Error(`ONG ${ongId} ya existe`);
 
@@ -14,7 +14,8 @@ export class AdminContract extends Contract {
       id: ongId,
       name,
       metadata,
-      type: 'ONG',
+      wallet,
+      type: 'ong',
     };
 
     await ctx.stub.putState(ongId, Buffer.from(JSON.stringify(ong)));
@@ -23,7 +24,7 @@ export class AdminContract extends Contract {
 
   @Transaction()
   @Returns('string')
-  public async createProject(ctx: Context, projectId: string, name: string, metadata: string): Promise<string> {
+  public async createProject(ctx: Context, projectId: string, name: string, metadata: string, wallet: string): Promise<string> {
     const exists = await this._exists(ctx, projectId);
     if (exists) throw new Error(`Proyecto ${projectId} ya existe`);
 
@@ -33,7 +34,8 @@ export class AdminContract extends Contract {
       metadata,
       status: PROJECT_STATUS.CREATED,
       donations: [],
-      type: 'PROJECT',
+      wallet,
+      type: 'project',
     };
 
     await ctx.stub.putState(projectId, Buffer.from(JSON.stringify(project)));
@@ -42,7 +44,7 @@ export class AdminContract extends Contract {
 
   @Transaction()
   @Returns('string')
-  public async createBeneficiary(ctx: Context, beneficiaryId: string, name: string, metadata: string): Promise<string> {
+  public async createBeneficiary(ctx: Context, beneficiaryId: string, name: string, metadata: string, wallet: string): Promise<string> {
     const exists = await this._exists(ctx, beneficiaryId);
     if (exists) throw new Error(`Beneficiario ${beneficiaryId} ya existe`);
 
@@ -50,8 +52,9 @@ export class AdminContract extends Contract {
       id: beneficiaryId,
       name,
       metadata,
-      type: 'BENEFICIARY',
+      type: 'beneficiary',
       donations: [],
+      wallet,
       status: BENEFICIARY_STATUS.ACTIVE,
     };
 
@@ -63,6 +66,36 @@ export class AdminContract extends Contract {
     const data = await ctx.stub.getState(id);
     return !!data && data.length > 0;
   }
-}
 
-export default AdminContract;
+
+  @Transaction(false)
+  @Returns('string')
+  public async listAllEntities(ctx: Context): Promise<string> {
+    const iterator = await ctx.stub.getStateByRange('', '');
+    const results = [];
+
+    while (true) {
+      const res = await iterator.next();
+      if (res.value && res.value.value.toString()) {
+        try {
+          const obj = JSON.parse(res.value.value.toString());
+          if (obj.id && obj.type && obj.name) {
+            results.push({
+              id: obj.id,
+              type: obj.type,
+              name: obj.name,
+              wallet: obj.wallet ?? null,
+            });
+          }
+        } catch (_) {
+          // ignorar errores de parsing
+        }
+      }
+
+      if (res.done) break;
+    }
+
+    await iterator.close();
+    return JSON.stringify(results);
+  }
+}

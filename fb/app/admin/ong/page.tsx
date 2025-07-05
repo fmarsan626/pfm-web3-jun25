@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useWeb3 } from '@/context/Web3Context'; 
 
 export default function CreateONGPage() {
+    const { account } = useWeb3();
     const [id, setId] = useState('');
     const [name, setName] = useState('');
     const [metadata, setMetadata] = useState('');
@@ -22,13 +24,12 @@ export default function CreateONGPage() {
             const res = await fetch('/api/admin/ong', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, name, metadata, wallet }),
+                body: JSON.stringify({ address: account, id, name, metadata, wallet }),
             });
 
             const data = await res.json();
             if (data.success) {
                 setMessage('✅ ONG creada con éxito');
-                // Opcional: volver al panel
                 setTimeout(() => router.push('/admin'), 1500);
             } else {
                 setMessage(`❌ Error: ${data.error}`);
@@ -66,7 +67,7 @@ export default function CreateONGPage() {
                         className="w-full border p-2 rounded"
                     />
                 </div>
-                <button type="submit" disabled={loading} className="bg-blue-600 text-white px-4 py-2 rounded">
+                <button type="submit" disabled={loading || !account} className="bg-blue-600 text-white px-4 py-2 rounded">
                     {loading ? 'Creando...' : 'Crear ONG'}
                 </button>
                 {message && <p className="mt-4">{message}</p>}

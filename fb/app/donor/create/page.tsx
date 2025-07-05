@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useWeb3 } from '@/context/Web3Context';
+import { useWeb3 } from '../../../src/context/Web3Context';
 
 export default function CreateDonationPage() {
   const [id, setId] = useState('');
   const [amount, setAmount] = useState('');
   const [metadata, setMetadata] = useState('');
   const [ongId, setOngId] = useState('');
-  const [ongs, setOngs] = useState<string[]>([]);
+  const [ongs, setOngs] = useState<{ id: string; name: string }[]>([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const { account } = useWeb3();
@@ -104,8 +104,10 @@ export default function CreateDonationPage() {
             className="w-full border p-2 rounded"
           >
             <option value="">-- Selecciona una ONG --</option>
-            {ongs.map((id) => (
-              <option key={id} value={id}>{id}</option>
+            {ongs.map((ong) => (
+              <option key={ong.id} value={ong.id}>
+                {ong.name} ({ong.id})
+              </option>
             ))}
           </select>
         </div>

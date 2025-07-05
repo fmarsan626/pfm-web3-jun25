@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectFabric } from '@/lib/hlf';
+import { connectFabric } from '../../../../src/lib/hlf';
 
 interface Params {
   params: {

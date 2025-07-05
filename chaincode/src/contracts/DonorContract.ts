@@ -6,7 +6,7 @@ import { Donation } from './models/Donation';
 export class DonorContract extends Contract {
   @Transaction()
   @Returns('string')
-  public async registerDonation(ctx: Context, donationId: string, metadata: string, ongId: string): Promise<string> {
+  public async registerDonation(ctx: Context, donationId: string, amount: string, metadata: string, ongId: string, donor: string): Promise<string> {
     const msp = ctx.clientIdentity.getMSPID();
     if (msp !== 'Org1MSP') {
       throw new Error('Solo los donantes (Org1) pueden registrar donaciones');
@@ -19,8 +19,10 @@ export class DonorContract extends Contract {
 
     const donation: Donation = {
       donationId,
+      amount,
       metadata,
       ongId,
+      donor,
       createdBy: ctx.clientIdentity.getID(),
       status: DONATION_STATUS.ENVIADA_A_ONG,
       timestamp: new Date().toISOString()
@@ -42,25 +44,30 @@ export class DonorContract extends Contract {
 
   @Transaction(false)
   @Returns('string')
-  public async listMyDonations(ctx: Context): Promise<string> {
-    const allResults: Donation[] = [];
+  public async listMyDonations(ctx: Context, donor: string): Promise<string> {
     const iterator = await ctx.stub.getStateByRange('', '');
-    const clientId = ctx.clientIdentity.getID();
+    const results = [];
 
     while (true) {
       const res = await iterator.next();
       if (res.value && res.value.value.toString()) {
-        const record = JSON.parse(res.value.value.toString()) as Donation;
-        if (record.createdBy === clientId) {
-          allResults.push(record);
+        try {
+          const donation = JSON.parse(res.value.value.toString());
+
+          if (
+           
+            donation.donor?.toLowerCase() === donor.toLowerCase()
+          ) {
+            results.push(donation);
+          }
+        } catch (e) {
+          console.error(`Error al parsear donación: ${e}`);
         }
       }
-      if (res.done) {
-        await iterator.close();
-        break;
-      }
+      if (res.done) break;
     }
 
-    return JSON.stringify(allResults);
+    await iterator.close();
+    return JSON.stringify(results);
   }
 }

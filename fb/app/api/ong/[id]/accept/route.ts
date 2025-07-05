@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectFabric } from '@/lib/hlf';
+import { connectFabric } from '../../../../../src/lib/hlf';
+import { validateRole } from '../../../../../src/lib/auth/validationRole';
+
 
 interface Params {
   params: { id: string };
 }
 
-export async function POST(_: NextRequest, { params }: Params) {
+export async function POST(_req: NextRequest, { params }: Params) {
+  const { address } = await _req.json();
+  const { valid } = await validateRole(address, 'ong');
+  if (!valid) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 403 });
+
+
   try {
     const contract = await connectFabric('ONGContract');
     await contract.submitTransaction('acceptDonation', params.id);
