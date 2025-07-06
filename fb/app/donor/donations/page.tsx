@@ -58,11 +58,17 @@ export default function MyDonationsPage() {
             <p><strong>Estado:</strong> {donation.status}</p>
             <p><strong>Metadata:</strong> {donation.metadata}</p>
             <p><strong>Beneficiario:</strong> {donation.beneficiaryId || 'No asignado'}</p>
-            <p><strong>Reporte del beneficiario:</strong> {donation.deliveryReport || 'Sin reporte'}</p>         
-            <p><strong>Reporte del proyecto:</strong> {donation.executionReport || 'Sin reporte'}</p>         
-            </li>
+            <p><strong>Reporte del beneficiario:</strong> {donation.deliveryReport || 'Sin reporte'}</p>
+            <p><strong>Reporte del proyecto:</strong> {donation.executionReport || 'Sin reporte'}</p>
+          </li>
         ))}
       </ul>
+      <button
+        onClick={() => window.history.back()}
+        className="mt-4 bg-gray-500 text-white px-4 py-2 rounded"
+      >
+        ← Atrás
+      </button>
     </main>
   );
 }

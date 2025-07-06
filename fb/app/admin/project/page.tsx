@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useWeb3 } from '@/context/Web3Context';
 
 export default function CreateProjectPage() {
-  const { account } = useWeb3(); 
+  const { account } = useWeb3();
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [metadata, setMetadata] = useState('');
@@ -70,6 +70,12 @@ export default function CreateProjectPage() {
           {loading ? 'Creando...' : 'Crear Proyecto'}
         </button>
         {message && <p className="mt-4">{message}</p>}
+        <button
+          onClick={() => window.history.back()}
+          className="mt-4 bg-gray-500 text-white px-4 py-2 rounded"
+        >
+          ← Atrás
+        </button>
       </form>
     </main>
   );

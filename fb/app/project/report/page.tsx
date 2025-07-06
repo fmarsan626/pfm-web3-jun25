@@ -24,7 +24,7 @@ export default function ReportDonationUsagePage() {
         if (data.success) {
           const filtered = data.result.filter(
             (d: any) =>
-              
+
               d.status === 'ENTREGADA_A_BENEFICIARIO'
           );
           setDonations(filtered);
@@ -94,6 +94,12 @@ export default function ReportDonationUsagePage() {
           </button>
         </div>
       ))}
+      <button
+        onClick={() => window.history.back()}
+        className="mt-4 bg-gray-500 text-white px-4 py-2 rounded"
+      >
+        ← Atrás
+      </button>
     </main>
   );
 }

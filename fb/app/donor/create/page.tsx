@@ -119,6 +119,12 @@ export default function CreateDonationPage() {
           {loading ? 'Registrando...' : 'Registrar Donación'}
         </button>
         {message && <p className="mt-4">{message}</p>}
+        <button
+          onClick={() => window.history.back()}
+          className="mt-4 bg-gray-500 text-white px-4 py-2 rounded"
+        >
+          ← Atrás
+        </button>
       </form>
     </main>
   );

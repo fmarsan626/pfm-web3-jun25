@@ -124,6 +124,12 @@ export default function AssignToBeneficiaryPage() {
           </li>
         ))}
       </ul>
+      <button
+        onClick={() => window.history.back()}
+        className="mt-4 bg-gray-500 text-white px-4 py-2 rounded"
+      >
+        ← Atrás
+      </button>
     </main>
   );
 }

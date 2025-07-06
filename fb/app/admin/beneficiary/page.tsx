@@ -87,6 +87,12 @@ export default function CreateBeneficiaryPage() {
           {loading ? 'Creando...' : 'Crear Beneficiario'}
         </button>
         {message && <p className="mt-4">{message}</p>}
+        <button
+          onClick={() => window.history.back()}
+          className="mt-4 bg-gray-500 text-white px-4 py-2 rounded"
+        >
+          ← Atrás
+        </button>
       </form>
     </main>
   );
